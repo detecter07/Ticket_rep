@@ -12,18 +12,31 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\Console\Input\Input;
 
+
+/*
+* APIController 
+* this controller is for creating api for our tickettool 
+*/
 class APIController extends Controller
 {
     private $ticketrep;
     private $userrepo;
+    
+    /*
+    * Contructor
+    * @param TicketReorsitory
+    * @param UserReporsitory
+    */
 
     public function __construct(TicketsReporsitory $ticketrep,UserReporsitory $userrepo)
     {
         $this->ticketrep = $ticketrep;
         $this->userrepo = $userrepo;
-
-
     }
+    
+    /* get all tickets 
+     * @return ticket list in  json format
+    */
     public function index()
     {
         $tickets = $this->ticketrep->getAll();
@@ -31,12 +44,16 @@ class APIController extends Controller
         return Response()->json([
             'tickets'=> $tickets
         ]);
-
     }
-
+    
+   /* store a  ticket 
+   * @param Request 
+    * @return the Response is json format
+    */ 
     public function store(Request $request)
     {
-        if($this->userrepo->User_Exists($request->input('user_id'))) {
+    
+        if ($this->userrepo->User_Exists($request->input('user_id'))) {
             $data =[
                 'title'=> $request->input('title'),
                 'content' =>$request->input('content'),
@@ -53,16 +70,20 @@ class APIController extends Controller
         ]
         ,200);
 
-       }else {
+       } else {
             return Response()->json([
                 'error' => 'ticket Failed '
             ]
             ,422);
-
         }
-
     }
-    public function update(Request $request, $id)
+   /* update a  ticket 
+   * @param Request
+   * @param $id the id of the Ticket
+    * @return the Response is json format
+    */ 
+    
+    public function update(Request $request, int $id)
     {
         if(Ticket::where('id',$id)->exists()) {
 
@@ -83,8 +104,12 @@ class APIController extends Controller
                 "message" => "Ticket not found"
             ], 404);
         }
-
     }
+    
+    /*
+    * @param $id 
+    * @return a single Ticket in json format
+    */
     public function show(int $id)
     {
         $ticket = $this->ticketrep->find($id);
@@ -100,7 +125,12 @@ class APIController extends Controller
             ],422 );
         }
     }
-
+    
+    /*
+    * this function delete a ticket
+    * @param $id : the id of the ticket
+    * @return Response in json format 
+    */
     public function delete(int $id)
     {
         $ticket = $this->ticketrep->find($id);
@@ -116,7 +146,6 @@ class APIController extends Controller
             return response()->json([
                 'error' => 'no id for this ticket'
             ],400);
-
         }
     }
 
