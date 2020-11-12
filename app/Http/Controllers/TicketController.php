@@ -11,6 +11,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 
+/*
+* Ticket Controller
+*/
+
 class TicketController extends Controller
 {
     private $ticketrep;
@@ -18,15 +22,11 @@ class TicketController extends Controller
     public function __construct(TicketsReporsitory $ticketrep)
     {
         $this->ticketrep = $ticketrep;
-
-
     }
+    
     public function index()
     {
         $tickets = $this->ticketrep->getAll();
-
-        var_dump($tickets);
-        die();
 
         return View('tickets.all',[
             'tickets'=> $tickets
@@ -34,10 +34,18 @@ class TicketController extends Controller
 
     }
 
+    /*
+    * this method is to show our form to create a ticket
+    */
     public function create()
     {
         return View('tickets.create');
     }
+    
+    /* store a  ticket 
+   * @param Request 
+    * @ return our response with success message to the view
+    */ 
     public function add(Request $request)
     {
         $data =[
@@ -47,15 +55,25 @@ class TicketController extends Controller
         ];
 
         $this->ticketrep->create($data);
+        
         return redirect('/tickets')->with('success', 'Contact saved!');
     }
+    
+    /*
+    * @param $id 
+    * @return a single Ticket to the view
+    */
     public function show(int $id)
     {
         return view('tickets.show',[
             'ticket'=> $this->ticketrep->find($id)
-
         ]);
     }
+     /*
+     * edit a ticket
+    * @param $id 
+    * @return a single Ticket in edit form
+    */
 
     public function edit(int $id)
     {
@@ -63,7 +81,13 @@ class TicketController extends Controller
             'ticket' => $this->ticketrep->find($id)
         ]);
     }
-    public function update(Request $request, $id)
+    
+    /*
+    * update a ticket
+    * @param $request
+    * @param $id
+    */
+    public function update(Request $request,int $id)
     {
             $validator =  Validator::make($request->all(), [
                 'title'=>'required',
@@ -85,7 +109,6 @@ class TicketController extends Controller
                 $ticket->save();
 
                 return redirect('/tickets')->with('success', 'Ticket updated successfully');
-
 
             }
 
